@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 
 @Entity
-public class Coord extends AbstractBaseEntity {
+public class Coordenate extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
 

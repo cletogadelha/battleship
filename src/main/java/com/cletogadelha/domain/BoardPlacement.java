@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 import com.cletogadelha.domain.enums.Direction;
 import com.cletogadelha.domain.enums.Ships;
@@ -25,14 +26,20 @@ public class BoardPlacement extends AbstractBaseEntity {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private UUID id;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
-	private Enum<Ships> ship;
+	private Ships ship;
 	
+	@NotNull
 	@Enumerated(EnumType.STRING)
-	private Enum<Direction> direction;
+	private Direction direction;
+	
+	@NotNull
+	@Column(nullable = false)
+	private Coordenate coordenate;
 	
 	@Column
-	private Coord coordenate;
+	private String[] filledSpaces;
 	
 	public UUID getId() {
 		return id;
@@ -42,28 +49,36 @@ public class BoardPlacement extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public Enum<Ships> getShip() {
+	public Ships getShip() {
 		return ship;
 	}
 
-	public void setShip(Enum<Ships> ship) {
+	public void setShip(Ships ship) {
 		this.ship = ship;
 	}
 
-	public Enum<Direction> getDirection() {
+	public Direction getDirection() {
 		return direction;
 	}
 
-	public void setDirection(Enum<Direction> direction) {
+	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
 
-	public Coord getCoordenate() {
+	public Coordenate getCoordenate() {
 		return coordenate;
 	}
 
-	public void setCoordenate(Coord coordenate) {
+	public void setCoordenate(Coordenate coordenate) {
 		this.coordenate = coordenate;
+	}
+
+	public String[] getFilledSpaces() {
+		return filledSpaces;
+	}
+
+	public void setFilledSpaces(String[] filledSpaces) {
+		this.filledSpaces = filledSpaces;
 	}
 	
 }

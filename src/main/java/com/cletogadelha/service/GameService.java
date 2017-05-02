@@ -1,5 +1,7 @@
 package com.cletogadelha.service;
 
+import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.cletogadelha.domain.Board;
 import com.cletogadelha.domain.BoardPlacement;
+import com.cletogadelha.domain.Coordenate;
 import com.cletogadelha.domain.Game;
 import com.cletogadelha.domain.GamePlayerBoard;
 import com.cletogadelha.domain.Player;
+import com.cletogadelha.domain.enums.Direction;
 import com.cletogadelha.domain.enums.GameStatus;
 import com.cletogadelha.repository.specification.GameSpecification;
 
@@ -76,16 +80,46 @@ public class GameService extends BaseService<Game> {
 		Game updatedGame = null;
 		
 		Game currentGame = getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
-		if(gameIsValidToSetup(currentGame, boardPlacement)){
+		
+		GamePlayerBoard gamePlayerBoard = currentGame.getPlayersOnGame().stream()
+				.filter(gpb -> playerId.equals(gpb.getPlayer().getId()))
+				.findAny().orElse(null);
+		
+		if(gameIsValidToSetup(currentGame, gamePlayerBoard)){
+			Set<BoardPlacement> placements = gamePlayerBoard.getBoard().getBoardPlacements();
 			
-//			Set<BoardPlacement> placements = currentGame
+			if(positionToPlaceIsValid(placements, boardPlacement)){
+				
+			}
 			
 		}
 		
 		return updatedGame;
 	}
 	
-	private boolean gameIsValidToSetup(Game game, BoardPlacement boardPlacement) {
+	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, BoardPlacement boardPlacement) {
+		
+		int size = boardPlacement.getShip().getSize();
+		Direction direction = boardPlacement.getDirection();
+		Coordenate coordenate = boardPlacement.getCoordenate(); 
+		
+		placements.stream().forEach(placement -> {
+			Arrays.stream(placement.getFilledSpaces()).anyMatch(coord -> coord.equals(coordenate.getLetter() + coordenate.getNumber()));
+		});
+		
+		return false;
+	}
+
+	private boolean gameIsValidToSetup(Game game, GamePlayerBoard gamePlayerBoard) {
+		
+		// Game is not valid to setup if it doesn't exist, or the player doens't belong to the game
+		// or if it's not on setup phase or the placement has finished
+		if(game == null 
+				|| gamePlayerBoard == null 
+				|| !GameStatus.SETUP_PHASE.equals(game.getGameStatus())
+				|| gamePlayerBoard.getBoard().isFinishedPlacement()){
+			return false;
+		}
 		
 		return true;
 	}
