@@ -3,13 +3,17 @@ package com.cletogadelha.service;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.cletogadelha.repository.BattleshipRepository;
+
+import lombok.Data;
+
+@Data
 public abstract class BaseService<T> {
 	
 	@Autowired
-	private JpaRepository<T , UUID> repository;
-	
+    private BattleshipRepository<T, UUID> repository;
+		
 	public Iterable<T> getAll(){
 		return repository.findAll();
 	}

@@ -1,11 +1,12 @@
-package com.cletogadelha.domain;
+package com.cletogadelha.domain.enums;
 
 public enum GameStatus {
 	
-	WAITING(1),
-	IN_PROGRESS(2),
-	PAUSED(3),
-	FINISHED(4);
+	WAITING_OPPONENT(1),
+	SETUP_PHASE(2),
+	IN_PROGRESS(3),
+	PAUSED(4),
+	FINISHED(5);
 	
 	private int cod;
 	

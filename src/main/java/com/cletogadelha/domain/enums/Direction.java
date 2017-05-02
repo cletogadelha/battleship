@@ -1,4 +1,4 @@
-package com.cletogadelha.domain;
+package com.cletogadelha.domain.enums;
 
 public enum Direction {
 	
