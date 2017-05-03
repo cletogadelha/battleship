@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cletogadelha.repository.BattleshipRepository;
 
-import lombok.Data;
-
-@Data
 public abstract class BaseService<T> {
 	
 	@Autowired
@@ -33,5 +30,15 @@ public abstract class BaseService<T> {
 	public void delete(UUID id){
 		repository.delete(id);
 	}
+
+	public BattleshipRepository<T, UUID> getRepository() {
+		return repository;
+	}
+
+	public void setRepository(BattleshipRepository<T, UUID> repository) {
+		this.repository = repository;
+	}
+	
+	
 
 }

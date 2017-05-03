@@ -2,13 +2,16 @@ package com.cletogadelha.domain;
 
 import java.util.UUID;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.cletogadelha.domain.enums.Direction;
@@ -34,12 +37,12 @@ public class BoardPlacement extends AbstractBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private Direction direction;
 	
-	@NotNull
-	@Column(nullable = false)
-	private Coordenate coordenate;
+	@Transient
+	private Coordinate initialCoordinate;
 	
-	@Column
-	private String[] filledSpaces;
+	@OneToMany(fetch=FetchType.EAGER)
+	@JoinColumn(name="BOARD_ID")
+	private Coordinate coordinate;
 	
 	public UUID getId() {
 		return id;
@@ -65,20 +68,20 @@ public class BoardPlacement extends AbstractBaseEntity {
 		this.direction = direction;
 	}
 
-	public Coordenate getCoordenate() {
-		return coordenate;
+	public Coordinate getCoordinate() {
+		return coordinate;
 	}
 
-	public void setCoordenate(Coordenate coordenate) {
-		this.coordenate = coordenate;
+	public void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
 	}
 
-	public String[] getFilledSpaces() {
-		return filledSpaces;
+	public Coordinate getInitialCoordinate() {
+		return initialCoordinate;
 	}
 
-	public void setFilledSpaces(String[] filledSpaces) {
-		this.filledSpaces = filledSpaces;
+	public void setInitialCoordinate(Coordinate initialCoordinate) {
+		this.initialCoordinate = initialCoordinate;
 	}
-	
+
 }

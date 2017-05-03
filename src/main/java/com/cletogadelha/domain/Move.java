@@ -19,7 +19,7 @@ public class Move extends AbstractBaseEntity {
 	private UUID id;
 
 	@Column
-	private Coordenate coordenate;
+	private Coordinate coordinate;
 
 	public UUID getId() {
 		return id;
@@ -29,12 +29,12 @@ public class Move extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public Coordenate getCoordenate() {
-		return coordenate;
+	public Coordinate getCoordeinate() {
+		return coordinate;
 	}
 
-	public void setCoordenate(Coordenate coordenate) {
-		this.coordenate = coordenate;
+	public void setCoordinate(Coordinate coordinate) {
+		this.coordinate = coordinate;
 	}
 
 }

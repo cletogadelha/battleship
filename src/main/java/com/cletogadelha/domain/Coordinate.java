@@ -1,23 +1,14 @@
 package com.cletogadelha.domain;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 
 @Entity
-public class Coordenate extends AbstractBaseEntity {
+public class Coordinate extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private UUID id;
 
 	@NotNull
 	@Column(nullable = false)
@@ -26,13 +17,10 @@ public class Coordenate extends AbstractBaseEntity {
 	@NotNull
 	@Column(nullable = false)
 	private Integer number;
-
-	public UUID getId() {
-		return id;
-	}
-
-	public void setId(UUID id) {
-		this.id = id;
+	
+	public Coordinate(String letter, Integer number){
+		this.letter = letter;
+		this.number = number;
 	}
 
 	public String getLetter() {

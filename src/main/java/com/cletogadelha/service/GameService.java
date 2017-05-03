@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cletogadelha.domain.Board;
 import com.cletogadelha.domain.BoardPlacement;
-import com.cletogadelha.domain.Coordenate;
+import com.cletogadelha.domain.Coordinate;
 import com.cletogadelha.domain.Game;
 import com.cletogadelha.domain.GamePlayerBoard;
 import com.cletogadelha.domain.Player;
@@ -101,10 +101,19 @@ public class GameService extends BaseService<Game> {
 		
 		int size = boardPlacement.getShip().getSize();
 		Direction direction = boardPlacement.getDirection();
-		Coordenate coordenate = boardPlacement.getCoordenate(); 
+		Coordinate coordinate = boardPlacement.getCoordinate(); 
+
+		Set<Coordinate> allCoordinates = null;
+		
+		//converteria boardPlacement em coordenadas
+		//limites no board
+		
 		
 		placements.stream().forEach(placement -> {
-			Arrays.stream(placement.getFilledSpaces()).anyMatch(coord -> coord.equals(coordenate.getLetter() + coordenate.getNumber()));
+			//Coordinate[] array2;
+			
+			//validaria se bate algum!
+			
 		});
 		
 		return false;

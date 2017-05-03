@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cletogadelha.service.BaseService;
 
-import lombok.Data;
-
-@Data
 public abstract class CRUDController<T> {
 
 	@Autowired
@@ -47,6 +44,14 @@ public abstract class CRUDController<T> {
 	public ResponseEntity<HttpStatus> remove(@PathVariable("id") UUID id){
 		service.delete(id);
 		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+	}
+
+	public BaseService<T> getService() {
+		return service;
+	}
+
+	public void setService(BaseService<T> service) {
+		this.service = service;
 	}
     
 
