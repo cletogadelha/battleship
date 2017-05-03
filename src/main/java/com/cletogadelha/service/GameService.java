@@ -87,9 +87,15 @@ public class GameService extends BaseService<Game> {
 		
 		if(gameIsValidToSetup(currentGame, gamePlayerBoard)){
 			Set<BoardPlacement> placements = gamePlayerBoard.getBoard().getBoardPlacements();
+			Set<Coordinate> coordinatesToBeFilled = 
+					boardService.getAllCoordinatesFromInitialCoordinate(boardPlacement);
 			
-			if(positionToPlaceIsValid(placements, boardPlacement)){
+			if(positionToPlaceIsValid(placements, coordinatesToBeFilled)){
+				boardPlacement.setFilledCoordinates(coordinatesToBeFilled);
 				
+				Set<BoardPlacement> userPlacements = gamePlayerBoard.getBoard().getBoardPlacements();
+				userPlacements.add(boardPlacement);
+				gamePlayerBoard.getBoard().setFinishedPlacement(userPlacements.size() == 5 ? true : false);
 			}
 			
 		}
@@ -97,26 +103,25 @@ public class GameService extends BaseService<Game> {
 		return updatedGame;
 	}
 	
-	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, BoardPlacement boardPlacement) {
+	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, Set<Coordinate> coordinatesToBeFilled) {
 		
-		int size = boardPlacement.getShip().getSize();
-		Direction direction = boardPlacement.getDirection();
-		Coordinate coordinate = boardPlacement.getCoordinate(); 
-
-		Set<Coordinate> allCoordinates = null;
+		//Validate Board Edges
+		for(Coordinate coord : coordinatesToBeFilled) {
+			if(coord.getLetter().compareTo("J") > 0 || coord.getNumber().compareTo(10) > 0){
+				return false;
+			}
+		};
 		
-		//converteria boardPlacement em coordenadas
-		//limites no board
+		//Validate if any coordinate matches with one that is deployed on player's board
+		for(BoardPlacement placement : placements){
+			for(Coordinate coordinateToBeFilled : coordinatesToBeFilled){
+				if(placement.getFilledCoordinates().contains(coordinateToBeFilled)){
+					return false;
+				}
+			}
+		}
 		
-		
-		placements.stream().forEach(placement -> {
-			//Coordinate[] array2;
-			
-			//validaria se bate algum!
-			
-		});
-		
-		return false;
+		return true;
 	}
 
 	private boolean gameIsValidToSetup(Game game, GamePlayerBoard gamePlayerBoard) {
