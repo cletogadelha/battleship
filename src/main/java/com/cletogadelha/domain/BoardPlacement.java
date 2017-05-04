@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -13,13 +14,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.cletogadelha.domain.enums.Direction;
 import com.cletogadelha.domain.enums.Ships;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "hash")
 public class BoardPlacement extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
@@ -44,6 +49,15 @@ public class BoardPlacement extends AbstractBaseEntity {
 		joinColumns = { @JoinColumn(name = "PLACEMENT_ID") }, 
 		inverseJoinColumns = { @JoinColumn(name = "COORDENATE_ID") })
 	private Set<Coordinate> filledCoordinates;
+	
+	@Column
+	private Integer damage;
+	
+    @PrePersist
+    protected void onCreate() {
+    	super.onCreate();
+    	damage = 0;
+    }
 	
 	public UUID getId() {
 		return id;
@@ -83,6 +97,14 @@ public class BoardPlacement extends AbstractBaseEntity {
 
 	public void setInitialCoordinate(Coordinate initialCoordinate) {
 		this.initialCoordinate = initialCoordinate;
+	}
+
+	public Integer getDamage() {
+		return damage;
+	}
+
+	public void setDamage(Integer damage) {
+		this.damage = damage;
 	}
 
 }

@@ -7,9 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "hash")
 public class Move extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
@@ -18,6 +23,7 @@ public class Move extends AbstractBaseEntity {
 	@GeneratedValue
 	private UUID id;
 
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "COORDINATE_ID")
 	private Coordinate coordinate;

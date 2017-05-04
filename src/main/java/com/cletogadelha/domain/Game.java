@@ -18,8 +18,11 @@ import javax.persistence.PrePersist;
 import javax.validation.constraints.Size;
 
 import com.cletogadelha.domain.enums.GameStatus;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "hash")
 public class Game extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
@@ -32,9 +35,9 @@ public class Game extends AbstractBaseEntity {
 	@Enumerated(EnumType.STRING)
 	private GameStatus gameStatus;
 	
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name="GAME_ID")
-	private Set<Move> moves;
+	private Set<Move> moves = new HashSet<>();
 	
 	@OneToMany(mappedBy = "pk.game", cascade = CascadeType.ALL)
 	@Size(max = 2)

@@ -1,7 +1,10 @@
 package com.cletogadelha.service;
 
+import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -13,6 +16,7 @@ import com.cletogadelha.domain.BoardPlacement;
 import com.cletogadelha.domain.Coordinate;
 import com.cletogadelha.domain.Game;
 import com.cletogadelha.domain.GamePlayerBoard;
+import com.cletogadelha.domain.Move;
 import com.cletogadelha.domain.Player;
 import com.cletogadelha.domain.enums.GameStatus;
 import com.cletogadelha.repository.specification.GameSpecification;
@@ -25,6 +29,9 @@ public class GameService extends BaseService<Game> {
 	
 	@Autowired
 	private BoardService boardService;
+	
+	@Autowired
+	private CoordinateService coordinateService;
 	
 	@Transactional
 	public Game createNewGame(UUID player1) {
@@ -53,8 +60,6 @@ public class GameService extends BaseService<Game> {
 	@Transactional
 	public Game joinGame(UUID gameId, UUID player2) {
 		
-		Game updatedGame = null;
-		
 		Game currentGame = this.get(gameId);
 		Player p2 = playerService.get(player2);
 		
@@ -69,21 +74,17 @@ public class GameService extends BaseService<Game> {
 			
 			currentGame.getPlayersOnGame().add(gpb);
 			currentGame.setGameStatus(GameStatus.SETUP_PHASE);
-			
-			updatedGame = this.update(currentGame);
 		}
 		
-		return updatedGame;
+		return currentGame;
 	}
 	
 	@Transactional
 	public Game setupShip(UUID gameId, UUID playerId, BoardPlacement boardPlacement){
 		
-		Game currentGame = getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
+		Game currentGame = getRepository().findOne(GameSpecification.byIdWithSimpleFetch(gameId));
 		
-		GamePlayerBoard gamePlayerBoard = currentGame.getPlayersOnGame().stream()
-				.filter(gpb -> playerId.equals(gpb.getPlayer().getId()))
-				.findAny().orElse(null);
+		GamePlayerBoard gamePlayerBoard = returnPlayerBoard(playerId, currentGame);
 		
 		if(gameIsValidToSetup(currentGame, gamePlayerBoard)){
 			Set<BoardPlacement> placements = gamePlayerBoard.getBoard().getBoardPlacements();
@@ -104,6 +105,134 @@ public class GameService extends BaseService<Game> {
 		
 		return currentGame;
 	}
+
+	@Transactional
+	public Game makeAMove(UUID gameId, UUID playerId, Move move){
+		
+		Game currentGame = get(gameId);
+		Player playerMakingMove = playerService.get(playerId);
+		
+		if(playerCanMakeAMove(currentGame, playerMakingMove) 
+				&& moveIsValid(playerMakingMove, currentGame, move)){
+			Coordinate coord = coordinateService
+					.findByLetterAndNumberIgnoreCase(move.getCoordinate().getLetter(), move.getCoordinate().getNumber());
+			move.setCoordinate(coord);
+			move.setPlayer(playerMakingMove);
+			currentGame.getMoves().add(move);
+			
+			GamePlayerBoard opponentBoard = returnOpponentBoard(playerId, currentGame);
+			
+			if(shipWasHit(opponentBoard, move)){
+				if(gameIsOver(opponentBoard)){
+					playerMakingMove.setWins(playerMakingMove.getWins()+1);
+					opponentBoard.getPlayer().setLosses(opponentBoard.getPlayer().getLosses()+1);
+					
+					currentGame.setWinner(playerMakingMove);
+					
+					currentGame.setGameStatus(GameStatus.FINISHED);
+				}
+			}
+			changeTurnHolder(currentGame);
+		}
+		
+		return currentGame;
+	}
+	
+	@Transactional
+	public Game coinFlip(UUID gameId){
+		Game currentGame = get(gameId);
+		if(gameIsReadyToCoinFlip(currentGame)){
+			int randomIndex = new Random().nextInt(2);
+			Iterator<GamePlayerBoard> iter = currentGame.getPlayersOnGame().iterator();
+			for (int i = 0; i < randomIndex; i++) {
+			    iter.next();
+			}
+			currentGame.setTurnHolder(iter.next().getPlayer());
+			currentGame.setGameStatus(GameStatus.IN_PROGRESS);
+		}
+		return currentGame;
+	}
+	
+	public Game gameStatus(UUID gameId){
+		return getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
+	}
+	
+	private boolean gameIsReadyToCoinFlip(Game currentGame) {
+		return currentGame.getGameStatus().equals(GameStatus.WAITING_COIN_FLIP);
+	}
+
+	private boolean gameIsOver(GamePlayerBoard currentGame) {
+		
+		return currentGame.getBoard().getBoardPlacements().stream()
+				.allMatch(placement -> 
+					placement.getDamage().equals(placement.getShip().getSize()));
+	}
+
+	private boolean moveIsValid(Player playerMakingMove, Game currentGame, Move move) {
+		
+		Set<Move> movesByUser = 
+				currentGame.getMoves().stream()
+					.filter(userMove -> userMove.getPlayer().getId().equals(playerMakingMove.getId()))
+					.collect(Collectors.toSet());
+ 		
+		for(Move movePlayed : movesByUser){
+			if(movePlayed.getCoordinate().equals(move.getCoordinate())){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean shipWasHit(GamePlayerBoard opponentBoard, Move move) {
+		for(BoardPlacement placement : opponentBoard.getBoard().getBoardPlacements()){
+			if(thereIsAShipOnMovePosition(placement, move)){
+				placement.setDamage(placement.getDamage()+1);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean thereIsAShipOnMovePosition(BoardPlacement placement, Move move){
+		return placement.getFilledCoordinates().stream()
+				.filter(coordinate -> coordinate.equals(move.getCoordinate()))
+				.findAny().orElse(null) != null;
+	}
+
+	private GamePlayerBoard returnPlayerBoard(UUID playerId, Game currentGame) {
+		return currentGame.getPlayersOnGame().stream()
+				.filter(gpb -> playerId.equals(gpb.getPlayer().getId()))
+				.findAny().orElse(null);
+	}
+	
+	private GamePlayerBoard returnOpponentBoard(UUID playerId, Game currentGame) {
+		return currentGame.getPlayersOnGame().stream()
+				.filter(gpb -> !playerId.equals(gpb.getPlayer().getId()))
+				.findAny().orElse(null);
+	}
+	
+	private void changeTurnHolder(Game currentGame) {
+		if(!currentGame.getGameStatus().equals(GameStatus.FINISHED)){
+			GamePlayerBoard opponentBoard = currentGame.getPlayersOnGame().stream()
+					.filter(gpb -> !currentGame.getTurnHolder().getId().equals(gpb.getPlayer().getId()))
+					.findAny().orElse(null);
+			
+			currentGame.setTurnHolder(opponentBoard.getPlayer());
+		}
+	}
+	
+	private boolean playerCanMakeAMove(Game currentGame, Player playerMakingMove){
+		
+		if(currentGame == null 
+				|| playerMakingMove == null 
+				|| !currentGame.getGameStatus().equals(GameStatus.IN_PROGRESS)
+				|| !currentGame.getTurnHolder().getId()
+						.equals(playerMakingMove.getId())){
+			return false;
+		}
+		
+		return true;
+	}
 	
 	private boolean shipIsValid(Set<BoardPlacement> placements, BoardPlacement boardPlacement) {
 		return placements.stream()
@@ -118,7 +247,7 @@ public class GameService extends BaseService<Game> {
 			}
 		}
 		
-		currentGame.setGameStatus(GameStatus.IN_PROGRESS);
+		currentGame.setGameStatus(GameStatus.WAITING_COIN_FLIP);
 	}
 
 	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, Set<Coordinate> coordinatesToBeFilled) {

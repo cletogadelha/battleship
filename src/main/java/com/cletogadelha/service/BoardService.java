@@ -23,13 +23,13 @@ public class BoardService extends BaseService<Board> {
 
 		Direction direction = placement.getDirection();
 		
-		//TODO put in order
+		//TODO put in order | IGNOREcASE
 		for (int i = 0; i < placement.getShip().getSize(); i++) {
 			if(Direction.HORIZONTAL.equals(direction)){
-				coordinates.add(coordinateService.findByLetterAndNumber(placement.getInitialCoordinate().getLetter(), 
+				coordinates.add(coordinateService.findByLetterAndNumberIgnoreCase(placement.getInitialCoordinate().getLetter(), 
 						placement.getInitialCoordinate().getNumber()+i));
 			}else{
-				coordinates.add(coordinateService.findByLetterAndNumber(String.valueOf((char)(placement.getInitialCoordinate().getLetter().charAt(0)+i)), 
+				coordinates.add(coordinateService.findByLetterAndNumberIgnoreCase(String.valueOf((char)(placement.getInitialCoordinate().getLetter().charAt(0)+i)), 
 						placement.getInitialCoordinate().getNumber()));
 			}
 		}

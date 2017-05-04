@@ -37,10 +37,19 @@ public class GameController extends CRUDController<Game> {
 	}
 	
 	@RequestMapping(value="{game_id}/player/{playerId}/move", method=RequestMethod.POST)
-	public ResponseEntity<?> playerMove(@PathVariable("game_id") UUID gameId, 
+	public ResponseEntity<?> makeAMove(@PathVariable("game_id") UUID gameId, 
 			@PathVariable("playerId") UUID playerId, @RequestBody @Valid Move move) {
-//		return ResponseEntity.ok(((GameService) getService()).setupShip(gameId, playerId, boardPlacement));
-		return null;
+		return ResponseEntity.ok(((GameService) getService()).makeAMove(gameId, playerId, move));
+	}
+	
+	@RequestMapping(value="{game_id}/coinFlip", method=RequestMethod.POST)
+	public ResponseEntity<?> coinFlip(@PathVariable("game_id") UUID gameId) {
+		return ResponseEntity.ok(((GameService) getService()).coinFlip(gameId));
+	}
+	
+	@RequestMapping(value="{game_id}/status", method=RequestMethod.GET)
+	public ResponseEntity<?> gameStatus(@PathVariable("game_id") UUID gameId) {
+		return ResponseEntity.ok(((GameService) getService()).gameStatus(gameId));
 	}
 	
 }
