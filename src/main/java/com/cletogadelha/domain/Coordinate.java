@@ -1,5 +1,6 @@
 package com.cletogadelha.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
-public class Coordinate {
+public class Coordinate implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
