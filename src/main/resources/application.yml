@@ -10,3 +10,7 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+#GRID CONFIG SIZE
+grid:
+  size: 10

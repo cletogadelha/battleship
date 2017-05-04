@@ -2,11 +2,12 @@ package com.cletogadelha.domain;
 
 import java.util.UUID;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 
 @Entity
@@ -18,7 +19,8 @@ public class Move extends AbstractBaseEntity {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private UUID id;
 
-	@Column
+	@ManyToOne
+	@JoinColumn(name = "COORDINATE_ID")
 	private Coordinate coordinate;
 
 	public UUID getId() {

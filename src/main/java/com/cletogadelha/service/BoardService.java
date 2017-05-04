@@ -19,7 +19,7 @@ public class BoardService extends BaseService<Board> {
 
 		Direction direction = placement.getDirection();
 		
-		//TODO put in order
+		//TODO put in order | return the db record and not a new entity
 		for (int i = 0; i < placement.getShip().getSize(); i++) {
 			if(Direction.HORIZONTAL.equals(direction)){
 				coordinates.add(new Coordinate(placement.getInitialCoordinate().getLetter(), 

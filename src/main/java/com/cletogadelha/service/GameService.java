@@ -1,6 +1,5 @@
 package com.cletogadelha.service;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,7 +14,6 @@ import com.cletogadelha.domain.Coordinate;
 import com.cletogadelha.domain.Game;
 import com.cletogadelha.domain.GamePlayerBoard;
 import com.cletogadelha.domain.Player;
-import com.cletogadelha.domain.enums.Direction;
 import com.cletogadelha.domain.enums.GameStatus;
 import com.cletogadelha.repository.specification.GameSpecification;
 
@@ -30,22 +28,26 @@ public class GameService extends BaseService<Game> {
 	
 	@Transactional
 	public Game createNewGame(UUID player1) {
-		Game newGame = new Game();
-		
 		Player p1 = playerService.get(player1);
-		Board newBoard = boardService.create(new Board());
 		
-		//creating composite key
-		GamePlayerBoard gpb = new GamePlayerBoard();
-		gpb.setBoard(newBoard);
-		gpb.setPlayer(p1);
-		gpb.setGame(newGame);
-		
-		//Add player to game
-		newGame.getPlayersOnGame().add(gpb);
-		
-		//create game
-		return this.create(newGame);
+		if(p1 == null){
+			return null;
+		}else{
+			Game newGame = new Game();
+			Board newBoard = boardService.create(new Board());
+			
+			//creating composite key
+			GamePlayerBoard gpb = new GamePlayerBoard();
+			gpb.setBoard(newBoard);
+			gpb.setPlayer(p1);
+			gpb.setGame(newGame);
+			
+			//Add player to game
+			newGame.getPlayersOnGame().add(gpb);
+			
+			//create game
+			return this.create(newGame);
+		}
 	}
 	
 	@Transactional
@@ -96,6 +98,8 @@ public class GameService extends BaseService<Game> {
 				Set<BoardPlacement> userPlacements = gamePlayerBoard.getBoard().getBoardPlacements();
 				userPlacements.add(boardPlacement);
 				gamePlayerBoard.getBoard().setFinishedPlacement(userPlacements.size() == 5 ? true : false);
+				
+//				boardService.update(gamePlayerBoard.getBoard());
 			}
 			
 		}

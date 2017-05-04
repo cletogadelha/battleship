@@ -46,8 +46,8 @@ public class BoardPlacement extends AbstractBaseEntity {
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "PLACEMENT_COORDENATE", 
-		joinColumns = { @JoinColumn(name = "usr_id") }, 
-		inverseJoinColumns = { @JoinColumn(name = "role_id") })
+		joinColumns = { @JoinColumn(name = "PLACEMENT_ID") }, 
+		inverseJoinColumns = { @JoinColumn(name = "COORDENATE_ID") })
 	private Set<Coordinate> filledCoordinates;
 	
 	public UUID getId() {

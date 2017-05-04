@@ -38,7 +38,7 @@ public class Game extends AbstractBaseEntity {
 	private GameStatus gameStatus;
 	
 	@OneToMany(fetch=FetchType.LAZY)
-	@JoinColumn(name="MOVE_ID")
+	@JoinColumn(name="GAME_ID")
 	private Set<Move> moves;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.game", cascade = CascadeType.ALL)

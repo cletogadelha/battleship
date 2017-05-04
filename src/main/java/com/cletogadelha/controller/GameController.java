@@ -24,12 +24,12 @@ public class GameController extends CRUDController<Game> {
 		return ResponseEntity.ok(((GameService) getService()).createNewGame(player1)); 
 	}
 	
-	@RequestMapping(value="{game_id}/join/{player_2}", method=RequestMethod.PUT)
+	@RequestMapping(value="{game_id}/join/{player_2}", method=RequestMethod.POST)
 	public ResponseEntity<?> join(@PathVariable("game_id") UUID gameId, @PathVariable("player_2") UUID player2) {
 		return ResponseEntity.ok(((GameService) getService()).joinGame(gameId, player2)); 
 	}
 	
-	@RequestMapping(value="{game_id}/player/{playerId}/setup", method=RequestMethod.PUT)
+	@RequestMapping(value="{game_id}/player/{playerId}/setup", method=RequestMethod.POST)
 	public ResponseEntity<?> setupShip(@PathVariable("game_id") UUID gameId, 
 			@PathVariable("playerId") UUID playerId, @RequestBody @Valid BoardPlacement boardPlacement) {
 		return ResponseEntity.ok(((GameService) getService()).setupShip(gameId, playerId, boardPlacement)); 

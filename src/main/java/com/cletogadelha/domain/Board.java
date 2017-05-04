@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -28,15 +29,21 @@ public class Board extends AbstractBaseEntity {
 	@Column(name = "BOARD_ID", unique = true, nullable = false)
 	private UUID id;
 	
-	@OneToMany(fetch=FetchType.LAZY)
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinColumn(name="BOARD_ID")
 	private Set<BoardPlacement> boardPlacements;
 	
-	@Column(columnDefinition = "boolean default true", nullable = false)
+	@Column(columnDefinition = "BOOLEAN DEFAULT FALSE", nullable = false)
 	private Boolean finishedPlacement;
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.board", cascade=CascadeType.ALL)
 	private Set<GamePlayerBoard> playerBoard = new HashSet<>();
+	
+	@PrePersist
+	protected void onCreate(){
+		super.onCreate();
+		finishedPlacement = Boolean.FALSE;
+	}
 
 	public UUID getId() {
 		return id;

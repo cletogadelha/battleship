@@ -1,29 +1,54 @@
 package com.cletogadelha.domain;
 
+import java.util.List;
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
-public class Coordinate extends AbstractBaseEntity {
+public class Coordinate {
 	
 	private static final long serialVersionUID = 1L;
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "COORDENATE_ID", unique = true, nullable = false)
+	private UUID id;
 
 	@NotNull
 	@Column(nullable = false)
-	@Size(min=1, max=1)
 	private String letter;
 	
 	@NotNull
 	@Column(nullable = false)
-	@Size(min=1, max=1)
 	private Integer number;
+	
+	@OneToMany(mappedBy = "coordinate")
+	@JsonIgnore
+	private List<Move> moves;
+	
+	public Coordinate(){ super(); }
 	
 	public Coordinate(String letter, Integer number){
 		this.letter = letter;
 		this.number = number;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
 	}
 
 	public String getLetter() {
@@ -42,6 +67,14 @@ public class Coordinate extends AbstractBaseEntity {
 		this.number = number;
 	}
 	
+	public List<Move> getMoves() {
+		return moves;
+	}
+
+	public void setMoves(List<Move> moves) {
+		this.moves = moves;
+	}
+
 	@Override
 	public String toString() {
 		return letter+number;
