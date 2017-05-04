@@ -1,18 +1,13 @@
 package com.cletogadelha.domain;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -21,7 +16,7 @@ public class Coordinate implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue
 	@Column(name = "COORDENATE_ID", unique = true, nullable = false)
 	private UUID id;
 
@@ -32,10 +27,6 @@ public class Coordinate implements Serializable {
 	@NotNull
 	@Column(nullable = false)
 	private Integer number;
-	
-	@OneToMany(mappedBy = "coordinate")
-	@JsonIgnore
-	private List<Move> moves;
 	
 	public Coordinate(){ super(); }
 	
@@ -68,14 +59,6 @@ public class Coordinate implements Serializable {
 		this.number = number;
 	}
 	
-	public List<Move> getMoves() {
-		return moves;
-	}
-
-	public void setMoves(List<Move> moves) {
-		this.moves = moves;
-	}
-
 	@Override
 	public String toString() {
 		return letter+number;

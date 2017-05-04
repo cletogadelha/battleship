@@ -9,7 +9,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import com.cletogadelha.domain.Coordinate;
-import com.cletogadelha.repository.CoordinateRepository;
+import com.cletogadelha.service.CoordinateService;
 
 @Component
 public class CoordinatesInitializer implements ApplicationListener<ContextRefreshedEvent> {
@@ -21,11 +21,11 @@ public class CoordinatesInitializer implements ApplicationListener<ContextRefres
 	private Integer initialNumber = 1;
  
 	@Autowired
-    private CoordinateRepository coordinateRepository;
+    private CoordinateService coordinateService;
  
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-    	List<Coordinate> coordinates = coordinateRepository.findAll();
+    	List<Coordinate> coordinates = coordinateService.getRepository().findAll();
     	if(coordinates.isEmpty()){
     		for(int i = 0; i < gridSize; i++){
     			for(int j = 0; j < gridSize; j++){
@@ -33,7 +33,7 @@ public class CoordinatesInitializer implements ApplicationListener<ContextRefres
     						initialNumber + j));
     			}
     		}
-    		coordinateRepository.save(coordinates);
+    		coordinateService.getRepository().save(coordinates);
     	}
     }
 }

@@ -79,8 +79,6 @@ public class GameService extends BaseService<Game> {
 	@Transactional
 	public Game setupShip(UUID gameId, UUID playerId, BoardPlacement boardPlacement){
 		
-		Game updatedGame = null;
-		
 		Game currentGame = getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
 		
 		GamePlayerBoard gamePlayerBoard = currentGame.getPlayersOnGame().stream()
@@ -92,26 +90,42 @@ public class GameService extends BaseService<Game> {
 			Set<Coordinate> coordinatesToBeFilled = 
 					boardService.getAllCoordinatesFromInitialCoordinate(boardPlacement);
 			
-			if(positionToPlaceIsValid(placements, coordinatesToBeFilled)){
+			if(shipIsValid(placements, boardPlacement) && positionToPlaceIsValid(placements, coordinatesToBeFilled)){
+				
 				boardPlacement.setFilledCoordinates(coordinatesToBeFilled);
 				
 				Set<BoardPlacement> userPlacements = gamePlayerBoard.getBoard().getBoardPlacements();
 				userPlacements.add(boardPlacement);
 				gamePlayerBoard.getBoard().setFinishedPlacement(userPlacements.size() == 5 ? true : false);
 				
-//				boardService.update(gamePlayerBoard.getBoard());
+				validateIfGameIsReadyToStart(currentGame);
 			}
-			
 		}
 		
-		return updatedGame;
+		return currentGame;
 	}
 	
+	private boolean shipIsValid(Set<BoardPlacement> placements, BoardPlacement boardPlacement) {
+		return placements.stream()
+				.filter(placement -> placement.getShip().equals(boardPlacement.getShip()))
+				.findAny().orElse(null) == null;
+	}
+
+	private void validateIfGameIsReadyToStart(Game currentGame) {
+		for(GamePlayerBoard gpb : currentGame.getPlayersOnGame()){
+			if(!gpb.getBoard().isFinishedPlacement()){
+				return;
+			}
+		}
+		
+		currentGame.setGameStatus(GameStatus.IN_PROGRESS);
+	}
+
 	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, Set<Coordinate> coordinatesToBeFilled) {
 		
 		//Validate Board Edges
 		for(Coordinate coord : coordinatesToBeFilled) {
-			if(coord.getLetter().compareTo("J") > 0 || coord.getNumber().compareTo(10) > 0){
+			if(coord == null || coord.getLetter().compareTo("J") > 0 || coord.getNumber().compareTo(10) > 0){
 				return false;
 			}
 		};

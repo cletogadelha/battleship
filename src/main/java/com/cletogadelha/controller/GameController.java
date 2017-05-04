@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cletogadelha.domain.BoardPlacement;
 import com.cletogadelha.domain.Game;
+import com.cletogadelha.domain.Move;
 import com.cletogadelha.service.GameService;
 
 @RestController
@@ -33,6 +34,13 @@ public class GameController extends CRUDController<Game> {
 	public ResponseEntity<?> setupShip(@PathVariable("game_id") UUID gameId, 
 			@PathVariable("playerId") UUID playerId, @RequestBody @Valid BoardPlacement boardPlacement) {
 		return ResponseEntity.ok(((GameService) getService()).setupShip(gameId, playerId, boardPlacement)); 
+	}
+	
+	@RequestMapping(value="{game_id}/player/{playerId}/move", method=RequestMethod.POST)
+	public ResponseEntity<?> playerMove(@PathVariable("game_id") UUID gameId, 
+			@PathVariable("playerId") UUID playerId, @RequestBody @Valid Move move) {
+//		return ResponseEntity.ok(((GameService) getService()).setupShip(gameId, playerId, boardPlacement));
+		return null;
 	}
 	
 }

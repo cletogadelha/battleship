@@ -6,26 +6,20 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Entity
-@JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "@id")
 public class Player extends AbstractBaseEntity {
 	
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue
 	@Column(name = "PLAYER_ID", unique = true, nullable = false)
 	private UUID id;
 
@@ -33,7 +27,7 @@ public class Player extends AbstractBaseEntity {
 	@Column(unique = true, nullable = false)
 	private String name;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.player")
+	@OneToMany(mappedBy = "pk.player")
 	private Set<GamePlayerBoard> games = new HashSet<>();
 	
 	@Column

@@ -6,4 +6,6 @@ import com.cletogadelha.domain.Coordinate;
 
 public interface CoordinateRepository extends BattleshipRepository<Coordinate, UUID>{
 
+	Coordinate findByLetterAndNumber(String letter, Integer number);
+	
 }
