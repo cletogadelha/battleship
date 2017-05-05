@@ -21,18 +21,26 @@ public abstract class CRUDController<T> {
     private BaseService<T> service;
 
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public T getDetail(@PathVariable("id") UUID id) {
-		return service.get(id);
-	}
+	public ResponseEntity<T> getDetail(@PathVariable("id") UUID id) {
+		T entity = service.get(id);
+		if(entity == null){
+			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<T>(service.get(id), HttpStatus.OK);
+	}	
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public Iterable<T> getList() {
-		return service.getAll();
+	public ResponseEntity<Iterable<T>> getList() {
+		Iterable<T> list = service.getAll();
+		if(list == null){
+			return new ResponseEntity<Iterable<T>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Iterable<T>>(list, HttpStatus.OK);
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public T create(@RequestBody @Valid T type){
-		return service.create(type);
+	public ResponseEntity<T> create(@RequestBody @Valid T type){
+		return new ResponseEntity<T>(service.create(type), HttpStatus.CREATED);
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)

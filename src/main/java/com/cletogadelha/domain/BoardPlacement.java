@@ -1,6 +1,6 @@
 package com.cletogadelha.domain;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -48,7 +48,7 @@ public class BoardPlacement extends AbstractBaseEntity {
 	@JoinTable(name = "PLACEMENT_COORDENATE", 
 		joinColumns = { @JoinColumn(name = "PLACEMENT_ID") }, 
 		inverseJoinColumns = { @JoinColumn(name = "COORDENATE_ID") })
-	private Set<Coordinate> filledCoordinates;
+	private List<Coordinate> filledCoordinates;
 	
 	@Column
 	private Integer damage;
@@ -83,11 +83,11 @@ public class BoardPlacement extends AbstractBaseEntity {
 		this.direction = direction;
 	}
 
-	public Set<Coordinate> getFilledCoordinates() {
+	public List<Coordinate> getFilledCoordinates() {
 		return filledCoordinates;
 	}
 
-	public void setFilledCoordinates(Set<Coordinate> filledCoordinates) {
+	public void setFilledCoordinates(List<Coordinate> filledCoordinates) {
 		this.filledCoordinates = filledCoordinates;
 	}
 

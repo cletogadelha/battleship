@@ -1,6 +1,7 @@
 package com.cletogadelha.service;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cletogadelha.domain.Board;
@@ -19,6 +21,7 @@ import com.cletogadelha.domain.GamePlayerBoard;
 import com.cletogadelha.domain.Move;
 import com.cletogadelha.domain.Player;
 import com.cletogadelha.domain.enums.GameStatus;
+import com.cletogadelha.exception.BattleshipException;
 import com.cletogadelha.repository.specification.GameSpecification;
 
 @Service
@@ -34,11 +37,11 @@ public class GameService extends BaseService<Game> {
 	private CoordinateService coordinateService;
 	
 	@Transactional
-	public Game createNewGame(UUID player1) {
+	public Game createNewGame(UUID player1) throws BattleshipException {
 		Player p1 = playerService.get(player1);
 		
 		if(p1 == null){
-			return null;
+			throw new BattleshipException("Player not found!", HttpStatus.NOT_FOUND);
 		}else{
 			Game newGame = new Game();
 			Board newBoard = boardService.create(new Board());
@@ -58,29 +61,31 @@ public class GameService extends BaseService<Game> {
 	}
 	
 	@Transactional
-	public Game joinGame(UUID gameId, UUID player2) {
+	public Game joinGame(UUID gameId, UUID player2) throws BattleshipException {
 		
 		Game currentGame = this.get(gameId);
 		Player p2 = playerService.get(player2);
-		
-		if(gameIsValidToJoin(currentGame, p2)){
-			Board opponentBoard = boardService.create(new Board());
-			
-			//creating composite key
-			GamePlayerBoard gpb = new GamePlayerBoard();
-			gpb.setBoard(opponentBoard);
-			gpb.setPlayer(p2);
-			gpb.setGame(currentGame);
-			
-			currentGame.getPlayersOnGame().add(gpb);
-			currentGame.setGameStatus(GameStatus.SETUP_PHASE);
+		if(p2 == null){
+			throw new BattleshipException("Player not found!", HttpStatus.NOT_FOUND);
+		}else{
+			if(gameIsValidToJoin(currentGame, p2)){
+				Board opponentBoard = boardService.create(new Board());
+				
+				//creating composite key
+				GamePlayerBoard gpb = new GamePlayerBoard();
+				gpb.setBoard(opponentBoard);
+				gpb.setPlayer(p2);
+				gpb.setGame(currentGame);
+				
+				currentGame.getPlayersOnGame().add(gpb);
+				currentGame.setGameStatus(GameStatus.SETUP_PHASE);
+			}
 		}
-		
 		return currentGame;
 	}
 	
 	@Transactional
-	public Game setupShip(UUID gameId, UUID playerId, BoardPlacement boardPlacement){
+	public Game setupShip(UUID gameId, UUID playerId, BoardPlacement boardPlacement) throws BattleshipException{
 		
 		Game currentGame = getRepository().findOne(GameSpecification.byIdWithSimpleFetch(gameId));
 		
@@ -88,7 +93,7 @@ public class GameService extends BaseService<Game> {
 		
 		if(gameIsValidToSetup(currentGame, gamePlayerBoard)){
 			Set<BoardPlacement> placements = gamePlayerBoard.getBoard().getBoardPlacements();
-			Set<Coordinate> coordinatesToBeFilled = 
+			List<Coordinate> coordinatesToBeFilled = 
 					boardService.getAllCoordinatesFromInitialCoordinate(boardPlacement);
 			
 			if(shipIsValid(placements, boardPlacement) && positionToPlaceIsValid(placements, coordinatesToBeFilled)){
@@ -107,7 +112,7 @@ public class GameService extends BaseService<Game> {
 	}
 
 	@Transactional
-	public Game makeAMove(UUID gameId, UUID playerId, Move move){
+	public Game makeAMove(UUID gameId, UUID playerId, Move move) throws BattleshipException{
 		
 		Game currentGame = get(gameId);
 		Player playerMakingMove = playerService.get(playerId);
@@ -115,7 +120,7 @@ public class GameService extends BaseService<Game> {
 		if(playerCanMakeAMove(currentGame, playerMakingMove) 
 				&& moveIsValid(playerMakingMove, currentGame, move)){
 			Coordinate coord = coordinateService
-					.findByLetterAndNumberIgnoreCase(move.getCoordinate().getLetter(), move.getCoordinate().getNumber());
+					.findByLetterAndNumber(move.getCoordinate().getLetter(), move.getCoordinate().getNumber());
 			move.setCoordinate(coord);
 			move.setPlayer(playerMakingMove);
 			currentGame.getMoves().add(move);
@@ -139,7 +144,7 @@ public class GameService extends BaseService<Game> {
 	}
 	
 	@Transactional
-	public Game coinFlip(UUID gameId){
+	public Game coinFlip(UUID gameId) throws BattleshipException{
 		Game currentGame = get(gameId);
 		if(gameIsReadyToCoinFlip(currentGame)){
 			int randomIndex = new Random().nextInt(2);
@@ -153,12 +158,21 @@ public class GameService extends BaseService<Game> {
 		return currentGame;
 	}
 	
-	public Game gameStatus(UUID gameId){
-		return getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
+	public Game gameStatus(UUID gameId) throws BattleshipException{
+		Game game = getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
+		
+		if(game == null){
+			throw new BattleshipException("Game not found!", HttpStatus.NOT_FOUND);
+		}
+				
+		return game;
 	}
 	
-	private boolean gameIsReadyToCoinFlip(Game currentGame) {
-		return currentGame.getGameStatus().equals(GameStatus.WAITING_COIN_FLIP);
+	private boolean gameIsReadyToCoinFlip(Game currentGame) throws BattleshipException {
+		if(!currentGame.getGameStatus().equals(GameStatus.WAITING_COIN_FLIP)){
+			throw new BattleshipException("The game is not at coin flip phase! Let's wait until the players finish the deployment");
+		}
+		return true;
 	}
 
 	private boolean gameIsOver(GamePlayerBoard currentGame) {
@@ -168,7 +182,7 @@ public class GameService extends BaseService<Game> {
 					placement.getDamage().equals(placement.getShip().getSize()));
 	}
 
-	private boolean moveIsValid(Player playerMakingMove, Game currentGame, Move move) {
+	private boolean moveIsValid(Player playerMakingMove, Game currentGame, Move move) throws BattleshipException {
 		
 		Set<Move> movesByUser = 
 				currentGame.getMoves().stream()
@@ -177,7 +191,7 @@ public class GameService extends BaseService<Game> {
  		
 		for(Move movePlayed : movesByUser){
 			if(movePlayed.getCoordinate().equals(move.getCoordinate())){
-				return false;
+				throw new BattleshipException("You have already played on that coordinate!");
 			}
 		}
 		return true;
@@ -221,14 +235,14 @@ public class GameService extends BaseService<Game> {
 		}
 	}
 	
-	private boolean playerCanMakeAMove(Game currentGame, Player playerMakingMove){
+	private boolean playerCanMakeAMove(Game currentGame, Player playerMakingMove) throws BattleshipException{
 		
 		if(currentGame == null 
 				|| playerMakingMove == null 
-				|| !currentGame.getGameStatus().equals(GameStatus.IN_PROGRESS)
-				|| !currentGame.getTurnHolder().getId()
-						.equals(playerMakingMove.getId())){
-			return false;
+				|| !currentGame.getGameStatus().equals(GameStatus.IN_PROGRESS)){
+			throw new BattleshipException("You cannot make a moke at the moment!");
+		}else if(!currentGame.getTurnHolder().getId().equals(playerMakingMove.getId())){
+			throw new BattleshipException("It's not your turn!");
 		}
 		
 		return true;
@@ -240,7 +254,7 @@ public class GameService extends BaseService<Game> {
 				.findAny().orElse(null) == null;
 	}
 
-	private void validateIfGameIsReadyToStart(Game currentGame) {
+	private void validateIfGameIsReadyToStart(Game currentGame) throws BattleshipException {
 		for(GamePlayerBoard gpb : currentGame.getPlayersOnGame()){
 			if(!gpb.getBoard().isFinishedPlacement()){
 				return;
@@ -250,12 +264,11 @@ public class GameService extends BaseService<Game> {
 		currentGame.setGameStatus(GameStatus.WAITING_COIN_FLIP);
 	}
 
-	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, Set<Coordinate> coordinatesToBeFilled) {
+	private boolean positionToPlaceIsValid(Set<BoardPlacement> placements, List<Coordinate> coordinatesToBeFilled) throws BattleshipException {
 		
-		//Validate Board Edges
 		for(Coordinate coord : coordinatesToBeFilled) {
-			if(coord == null || coord.getLetter().compareTo("J") > 0 || coord.getNumber().compareTo(10) > 0){
-				return false;
+			if(coord == null){
+				throw new BattleshipException("You cannot place a ship on that position!");
 			}
 		};
 		
@@ -263,7 +276,7 @@ public class GameService extends BaseService<Game> {
 		for(BoardPlacement placement : placements){
 			for(Coordinate coordinateToBeFilled : coordinatesToBeFilled){
 				if(placement.getFilledCoordinates().contains(coordinateToBeFilled)){
-					return false;
+					throw new BattleshipException("Oops! There is a ship deployed in here!");
 				}
 			}
 		}
@@ -271,7 +284,7 @@ public class GameService extends BaseService<Game> {
 		return true;
 	}
 
-	private boolean gameIsValidToSetup(Game game, GamePlayerBoard gamePlayerBoard) {
+	private boolean gameIsValidToSetup(Game game, GamePlayerBoard gamePlayerBoard) throws BattleshipException {
 		
 		// Game is not valid to setup if it doesn't exist, or the player doens't belong to the game
 		// or if it's not on setup phase or the placement has finished
@@ -279,20 +292,21 @@ public class GameService extends BaseService<Game> {
 				|| gamePlayerBoard == null 
 				|| !GameStatus.SETUP_PHASE.equals(game.getGameStatus())
 				|| gamePlayerBoard.getBoard().isFinishedPlacement()){
-			return false;
+			throw new BattleshipException("Sorry! You cannot setup ships in this game!");
 		}
 		
 		return true;
 	}
 
-	private boolean gameIsValidToJoin(Game game, Player player) {
+	private boolean gameIsValidToJoin(Game game, Player player) throws BattleshipException {
 		
 		//Game is not valid to join if it doesn't exist, or if it's not waiting to another player to join
 		//or if it's a game that you are already in.
 		if(game == null 
-				|| !GameStatus.WAITING_OPPONENT.equals(game.getGameStatus())
-				|| game.getPlayersOnGame().iterator().next().getPlayer().getName().equals(player.getName())){
-			return false;
+				|| !GameStatus.WAITING_OPPONENT.equals(game.getGameStatus())){
+			throw new BattleshipException("Sorry! This game is not available to enter!");
+		}else if(game.getPlayersOnGame().iterator().next().getPlayer().getName().equals(player.getName())){
+			throw new BattleshipException("You are already in this game!");
 		}
 		
 		return true;

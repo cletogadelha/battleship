@@ -1,7 +1,7 @@
 package com.cletogadelha.service;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,19 +17,18 @@ public class BoardService extends BaseService<Board> {
 	@Autowired
 	private CoordinateService coordinateService;
 	
-	public Set<Coordinate> getAllCoordinatesFromInitialCoordinate(BoardPlacement placement) {
+	public List<Coordinate> getAllCoordinatesFromInitialCoordinate(BoardPlacement placement) {
 		
-		Set<Coordinate> coordinates = new HashSet<>();
+		List<Coordinate> coordinates = new ArrayList<>();
 
 		Direction direction = placement.getDirection();
 		
-		//TODO put in order | IGNOREcASE
 		for (int i = 0; i < placement.getShip().getSize(); i++) {
 			if(Direction.HORIZONTAL.equals(direction)){
-				coordinates.add(coordinateService.findByLetterAndNumberIgnoreCase(placement.getInitialCoordinate().getLetter(), 
+				coordinates.add(coordinateService.findByLetterAndNumber(placement.getInitialCoordinate().getLetter(), 
 						placement.getInitialCoordinate().getNumber()+i));
 			}else{
-				coordinates.add(coordinateService.findByLetterAndNumberIgnoreCase(String.valueOf((char)(placement.getInitialCoordinate().getLetter().charAt(0)+i)), 
+				coordinates.add(coordinateService.findByLetterAndNumber(String.valueOf((char)(placement.getInitialCoordinate().getLetter().charAt(0)+i)), 
 						placement.getInitialCoordinate().getNumber()));
 			}
 		}
