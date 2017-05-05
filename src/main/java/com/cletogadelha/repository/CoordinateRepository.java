@@ -1,10 +1,8 @@
 package com.cletogadelha.repository;
 
-import java.util.UUID;
-
 import com.cletogadelha.domain.Coordinate;
 
-public interface CoordinateRepository extends BattleshipRepository<Coordinate, UUID>{
+public interface CoordinateRepository extends BattleshipRepository<Coordinate, Integer>{
 
 	Coordinate findByLetterIgnoreCaseAndNumber(String letter, Integer number);
 	

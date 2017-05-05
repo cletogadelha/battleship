@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -37,7 +36,7 @@ public class GameService extends BaseService<Game> {
 	private CoordinateService coordinateService;
 	
 	@Transactional
-	public Game createNewGame(UUID player1) throws BattleshipException {
+	public Game createNewGame(Integer player1) throws BattleshipException {
 		Player p1 = playerService.get(player1);
 		
 		if(p1 == null){
@@ -61,7 +60,7 @@ public class GameService extends BaseService<Game> {
 	}
 	
 	@Transactional
-	public Game joinGame(UUID gameId, UUID player2) throws BattleshipException {
+	public Game joinGame(Integer gameId, Integer player2) throws BattleshipException {
 		
 		Game currentGame = this.get(gameId);
 		Player p2 = playerService.get(player2);
@@ -85,7 +84,7 @@ public class GameService extends BaseService<Game> {
 	}
 	
 	@Transactional
-	public Game setupShip(UUID gameId, UUID playerId, BoardPlacement boardPlacement) throws BattleshipException{
+	public Game setupShip(Integer gameId, Integer playerId, BoardPlacement boardPlacement) throws BattleshipException{
 		
 		Game currentGame = getRepository().findOne(GameSpecification.byIdWithSimpleFetch(gameId));
 		
@@ -112,7 +111,7 @@ public class GameService extends BaseService<Game> {
 	}
 
 	@Transactional
-	public Game makeAMove(UUID gameId, UUID playerId, Move move) throws BattleshipException{
+	public Game makeAMove(Integer gameId, Integer playerId, Move move) throws BattleshipException{
 		
 		Game currentGame = get(gameId);
 		Player playerMakingMove = playerService.get(playerId);
@@ -144,7 +143,7 @@ public class GameService extends BaseService<Game> {
 	}
 	
 	@Transactional
-	public Game coinFlip(UUID gameId) throws BattleshipException{
+	public Game coinFlip(Integer gameId) throws BattleshipException{
 		Game currentGame = get(gameId);
 		if(gameIsReadyToCoinFlip(currentGame)){
 			int randomIndex = new Random().nextInt(2);
@@ -158,7 +157,7 @@ public class GameService extends BaseService<Game> {
 		return currentGame;
 	}
 	
-	public Game gameStatus(UUID gameId) throws BattleshipException{
+	public Game gameStatus(Integer gameId) throws BattleshipException{
 		Game game = getRepository().findOne(GameSpecification.byIdWithCompleteFetch(gameId));
 		
 		if(game == null){
@@ -213,13 +212,13 @@ public class GameService extends BaseService<Game> {
 				.findAny().orElse(null) != null;
 	}
 
-	private GamePlayerBoard returnPlayerBoard(UUID playerId, Game currentGame) {
+	private GamePlayerBoard returnPlayerBoard(Integer playerId, Game currentGame) {
 		return currentGame.getPlayersOnGame().stream()
 				.filter(gpb -> playerId.equals(gpb.getPlayer().getId()))
 				.findAny().orElse(null);
 	}
 	
-	private GamePlayerBoard returnOpponentBoard(UUID playerId, Game currentGame) {
+	private GamePlayerBoard returnOpponentBoard(Integer playerId, Game currentGame) {
 		return currentGame.getPlayersOnGame().stream()
 				.filter(gpb -> !playerId.equals(gpb.getPlayer().getId()))
 				.findAny().orElse(null);

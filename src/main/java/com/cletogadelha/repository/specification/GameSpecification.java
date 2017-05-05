@@ -1,7 +1,5 @@
 package com.cletogadelha.repository.specification;
 
-import java.util.UUID;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;
@@ -15,12 +13,12 @@ import com.cletogadelha.domain.Game;
 
 public class GameSpecification {
 
-    public static Specification<Game> byId(final UUID id) {
+    public static Specification<Game> byId(final Integer id) {
         return new Specification<Game>() {
             @Override
             public Predicate toPredicate(Root<Game> root,
                     CriteriaQuery<?> query, CriteriaBuilder builder) {
-                return builder.equal(root.<UUID>get("id"), id);
+                return builder.equal(root.<Integer>get("id"), id);
             }
         };
     }
@@ -54,11 +52,11 @@ public class GameSpecification {
         };
     }
     
-    public static Specification<Game> byIdWithSimpleFetch(UUID id) {
+    public static Specification<Game> byIdWithSimpleFetch(Integer id) {
         return Specifications.where(byId(id)).and(fetchSimpleData());
     }
     
-    public static Specification<Game> byIdWithCompleteFetch(UUID id) {
+    public static Specification<Game> byIdWithCompleteFetch(Integer id) {
         return Specifications.where(byId(id)).and(fetchCompleteData());
     }
     

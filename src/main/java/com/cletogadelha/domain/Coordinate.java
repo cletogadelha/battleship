@@ -1,7 +1,6 @@
 package com.cletogadelha.domain;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +21,7 @@ public class Coordinate implements Serializable {
 	@Id
 	@GeneratedValue
 	@Column(name = "COORDENATE_ID", unique = true, nullable = false)
-	private UUID id;
+	private Integer id;
 
 	@NotNull
 	@Column(nullable = false)
@@ -39,11 +38,11 @@ public class Coordinate implements Serializable {
 		this.number = number;
 	}
 
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

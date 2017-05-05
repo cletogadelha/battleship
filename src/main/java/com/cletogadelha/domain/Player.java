@@ -2,7 +2,6 @@ package com.cletogadelha.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +24,7 @@ public class Player extends AbstractBaseEntity {
 	@Id
 	@GeneratedValue
 	@Column(name = "PLAYER_ID", unique = true, nullable = false)
-	private UUID id;
+	private Integer id;
 
 	@NotNull
 	@Column(unique = true, nullable = false)
@@ -55,11 +54,11 @@ public class Player extends AbstractBaseEntity {
     	score = wins - losses;
     }
 	
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

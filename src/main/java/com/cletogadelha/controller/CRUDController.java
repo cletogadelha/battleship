@@ -1,7 +1,5 @@
 package com.cletogadelha.controller;
 
-import java.util.UUID;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +19,7 @@ public abstract class CRUDController<T> {
     private BaseService<T> service;
 
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<T> getDetail(@PathVariable("id") UUID id) {
+	public ResponseEntity<T> getDetail(@PathVariable("id") Integer id) {
 		T entity = service.get(id);
 		if(entity == null){
 			return new ResponseEntity<T>(HttpStatus.NOT_FOUND);
@@ -39,7 +37,7 @@ public abstract class CRUDController<T> {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<T> create(@RequestBody @Valid T type){
+	public ResponseEntity<T> create(@RequestBody @Valid T type) throws Exception {
 		return new ResponseEntity<T>(service.create(type), HttpStatus.CREATED);
 	}
 	
@@ -49,7 +47,7 @@ public abstract class CRUDController<T> {
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-	public ResponseEntity<HttpStatus> remove(@PathVariable("id") UUID id){
+	public ResponseEntity<HttpStatus> remove(@PathVariable("id") Integer id){
 		service.delete(id);
 		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
 	}

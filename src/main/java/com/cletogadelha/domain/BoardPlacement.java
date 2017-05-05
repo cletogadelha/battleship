@@ -1,7 +1,6 @@
 package com.cletogadelha.domain;
 
 import java.util.List;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,7 +30,7 @@ public class BoardPlacement extends AbstractBaseEntity {
 
 	@Id
 	@GeneratedValue
-	private UUID id;
+	private Integer id;
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
@@ -59,11 +58,11 @@ public class BoardPlacement extends AbstractBaseEntity {
     	damage = 0;
     }
 	
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

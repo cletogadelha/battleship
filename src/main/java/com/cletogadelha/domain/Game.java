@@ -2,7 +2,6 @@ package com.cletogadelha.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +29,7 @@ public class Game extends AbstractBaseEntity {
 	@Id
 	@GeneratedValue
 	@Column(name = "GAME_ID", unique = true, nullable = false)
-	private UUID id;
+	private Integer id;
 	
 	@Enumerated(EnumType.STRING)
 	private GameStatus gameStatus;
@@ -58,11 +57,11 @@ public class Game extends AbstractBaseEntity {
     	gameStatus = GameStatus.WAITING_OPPONENT;
     }
 
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

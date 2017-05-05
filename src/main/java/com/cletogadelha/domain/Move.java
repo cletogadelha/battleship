@@ -1,7 +1,5 @@
 package com.cletogadelha.domain;
 
-import java.util.UUID;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,7 +19,7 @@ public class Move extends AbstractBaseEntity {
 
 	@Id
 	@GeneratedValue
-	private UUID id;
+	private Integer id;
 
 	@NotNull
 	@ManyToOne
@@ -32,11 +30,11 @@ public class Move extends AbstractBaseEntity {
 	@JoinColumn(name = "PLAYER_ID")
 	private Player player;
 
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

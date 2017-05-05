@@ -23,6 +23,9 @@ public class CoordinatesInitializer implements ApplicationListener<ContextRefres
 	@Autowired
     private CoordinateService coordinateService;
  
+	/**
+	 * Method responsible to initialize all the cordinates used by the game
+	 */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
     	List<Coordinate> coordinates = coordinateService.getRepository().findAll();

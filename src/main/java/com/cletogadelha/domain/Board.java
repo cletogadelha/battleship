@@ -2,7 +2,6 @@ package com.cletogadelha.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -25,7 +24,7 @@ public class Board extends AbstractBaseEntity {
 	@Id
 	@GeneratedValue
 	@Column(name = "BOARD_ID", unique = true, nullable = false)
-	private UUID id;
+	private Integer id;
 	
 	@OneToMany(cascade=CascadeType.ALL)
 	@JoinColumn(name="BOARD_ID")
@@ -43,11 +42,11 @@ public class Board extends AbstractBaseEntity {
 		finishedPlacement = Boolean.FALSE;
 	}
 
-	public UUID getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(UUID id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
