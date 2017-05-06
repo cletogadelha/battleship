@@ -17,14 +17,14 @@ public class CoordinatesInitializer implements ApplicationListener<ContextRefres
 	@Value("${grid.size}")
 	private Integer gridSize;
 	
-	private String initialLetter = "A";
-	private Integer initialNumber = 1;
+	private static final String INITIAL_LETTER = "A";
+	private static final Integer INITIAL_NUMBER = 1;
  
 	@Autowired
     private CoordinateService coordinateService;
  
 	/**
-	 * Method responsible to initialize all the cordinates used by the game
+	 * Method responsible to initialize all the coordinates used by the game
 	 */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -32,8 +32,8 @@ public class CoordinatesInitializer implements ApplicationListener<ContextRefres
     	if(coordinates.isEmpty()){
     		for(int i = 0; i < gridSize; i++){
     			for(int j = 0; j < gridSize; j++){
-    				coordinates.add(new Coordinate(String.valueOf((char)(initialLetter.charAt(0)+i)), 
-    						initialNumber + j));
+    				coordinates.add(new Coordinate(String.valueOf((char)(INITIAL_LETTER.charAt(0)+i)), 
+    						INITIAL_NUMBER + j));
     			}
     		}
     		coordinateService.getRepository().save(coordinates);

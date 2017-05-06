@@ -31,6 +31,4 @@ public class MoveResponse implements Serializable {
 		this.game = game;
 	}
 	
-	
-
 }
