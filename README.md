@@ -1,4 +1,6 @@
-# battleship
+[![Build Status](https://travis-ci.org/cletogadelha/battleship.svg?branch=master)](https://travis-ci.org/cletogadelha/battleship)
+
+# battleship  
 
 Initial implementation of an Battleship API using Spring Boot 1.5.x and PostgresSQL
 
@@ -16,3 +18,5 @@ Basic endpoints to start to play
 * `POST` `rest/game/{game_id}/pause` pause a game that is in progress.
 * `POST` `{game_id}/resume` resume a paused game.
 * `GET` `/leaderboard` shows the ranking
+# heroku
+Deployed under https://cletogadelha-battleship.herokuapp.com/
