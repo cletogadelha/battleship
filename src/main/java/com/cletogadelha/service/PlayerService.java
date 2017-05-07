@@ -14,6 +14,7 @@ import com.cletogadelha.domain.Player;
 public class PlayerService extends BaseService<Player> {
 	
 	public ResponseEntity<Page<Player>> getLeaderBoard(){
+		//Page having the first 10 scores in DESC order
 		PageRequest top10 = new PageRequest(0, 10, new Sort(new Order(Direction.DESC, "score")));
 		return ResponseEntity.ok(getRepository().findAll(top10));
 	}
