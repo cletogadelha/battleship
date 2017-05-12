@@ -26,6 +26,7 @@ import com.cletogadelha.domain.MoveResponse;
 import com.cletogadelha.domain.enums.Direction;
 import com.cletogadelha.domain.enums.GameStatus;
 import com.cletogadelha.domain.enums.MoveStatus;
+import com.cletogadelha.domain.enums.ShipStatusEnum;
 import com.cletogadelha.domain.enums.Ships;
 import com.cletogadelha.exception.BattleshipErrorResponse;
 
@@ -202,6 +203,20 @@ public class BattleshipTest {
 		
 		assertEquals(response.getBody().getStatus(), MoveStatus.HIT);
 		assertEquals(response.getStatusCode(), HttpStatus.OK);
+		assertEquals(response.getBody().getShipStatus().getStatus(), ShipStatusEnum.DAMAGED);
+	}
+	
+	@Test
+	public void shouldMakeAMoveAndSunkShip(){
+		Move move = getMockMove();
+		move.setCoordinate(new Coordinate("F", 10));
+		
+		ResponseEntity<MoveResponse> response = 
+				restTemplate.postForEntity(URL + "4/player/1/move", move, MoveResponse.class);
+		
+		assertEquals(response.getBody().getStatus(), MoveStatus.HIT);
+		assertEquals(response.getStatusCode(), HttpStatus.OK);
+		assertEquals(response.getBody().getShipStatus().getStatus(), ShipStatusEnum.SUNK);
 	}
 	
 	@Test

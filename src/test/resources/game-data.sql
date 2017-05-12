@@ -66,7 +66,10 @@ INSERT INTO board_placement( id, created, updated, version, damage, direction, s
 	VALUES ('3', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0, 0, 'VERTICAL', 'SUBMARINE','3');
 	
 INSERT INTO board_placement( id, created, updated, version, damage, direction, ship, board_id) 
-	VALUES ('4', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0, 0, 'HORIZONTAL', 'SUBMARINE','4');		
+	VALUES ('4', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0, 0, 'HORIZONTAL', 'SUBMARINE','4');
+	
+INSERT INTO board_placement( id, created, updated, version, damage, direction, ship, board_id) 
+	VALUES ('5', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0, 4, 'VERTICAL', 'AIRCRAFT_CARRIER','4');
 
 --Placement-Coordinate
 INSERT INTO placement_coordinate( placement_id, coordinate_id) 
@@ -76,7 +79,10 @@ INSERT INTO placement_coordinate( placement_id, coordinate_id)
 	VALUES ('3', '1'); --coordinate A1
 	
 INSERT INTO placement_coordinate( placement_id, coordinate_id) 
-	VALUES ('4', '1'); --coordinate A1		
+	VALUES ('4', '1'); --coordinate A1	
+	
+INSERT INTO placement_coordinate( placement_id, coordinate_id) 
+	VALUES ('5', '60'); --coordinate A1		
 
 INSERT INTO move( id, created, updated, version, coordinate_id, player_id, game_id) 
 	VALUES (1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0, 2, 1, 4);

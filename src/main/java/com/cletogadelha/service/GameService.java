@@ -20,8 +20,10 @@ import com.cletogadelha.domain.GamePlayerBoard;
 import com.cletogadelha.domain.Move;
 import com.cletogadelha.domain.MoveResponse;
 import com.cletogadelha.domain.Player;
+import com.cletogadelha.domain.ShipStatus;
 import com.cletogadelha.domain.enums.GameStatus;
 import com.cletogadelha.domain.enums.MoveStatus;
+import com.cletogadelha.domain.enums.ShipStatusEnum;
 import com.cletogadelha.exception.BattleshipException;
 import com.cletogadelha.repository.specification.GameSpecification;
 
@@ -162,8 +164,10 @@ public class GameService extends BaseService<Game> {
 			
 			GamePlayerBoard opponentBoard = returnOpponentBoard(playerId, currentGame);
 			
-			if(shipWasHit(opponentBoard, move)){
+			ShipStatus shipSatus = null;
+			if((shipSatus = shipWasHit(opponentBoard, move)) != null){
 				response.setStatus(MoveStatus.HIT);
+				response.setShipStatus(shipSatus);
 				
 				if(gameIsOver(opponentBoard)){
 					response.setStatus(MoveStatus.WON);
@@ -319,14 +323,21 @@ public class GameService extends BaseService<Game> {
 	 * @param move
 	 * @return
 	 */
-	private boolean shipWasHit(GamePlayerBoard opponentBoard, Move move) {
+	private ShipStatus shipWasHit(GamePlayerBoard opponentBoard, Move move) {
+		ShipStatus shipStatus = null;
+		
 		for(BoardPlacement placement : opponentBoard.getBoard().getBoardPlacements()){
 			if(thereIsAShipOnMovePosition(placement, move)){
 				placement.setDamage(placement.getDamage()+1);
-				return true;
+				
+				shipStatus = new ShipStatus();
+				shipStatus.setShip(placement.getShip());
+				shipStatus.setStatus( placement.getShip().getSize() == placement.getDamage()  ? ShipStatusEnum.SUNK :  ShipStatusEnum.DAMAGED);
+				
+				return shipStatus;
 			}
 		}
-		return false;
+		return shipStatus;
 	}
 	
 	/**

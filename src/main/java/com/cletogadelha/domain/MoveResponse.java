@@ -11,6 +11,7 @@ public class MoveResponse implements Serializable {
 	private Move move;
 	private MoveStatus status;
 	private Game game;
+	private ShipStatus shipStatus;
 	
 	public Move getMove() {
 		return move;
@@ -29,6 +30,12 @@ public class MoveResponse implements Serializable {
 	}
 	public void setGame(Game game) {
 		this.game = game;
+	}
+	public ShipStatus getShipStatus() {
+		return shipStatus;
+	}
+	public void setShipStatus(ShipStatus shipStatus) {
+		this.shipStatus = shipStatus;
 	}
 	
 }
