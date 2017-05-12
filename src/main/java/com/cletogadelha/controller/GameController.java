@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cletogadelha.domain.BoardPlacement;
 import com.cletogadelha.domain.Game;
 import com.cletogadelha.domain.Move;
+import com.cletogadelha.domain.MoveResponse;
 import com.cletogadelha.exception.BattleshipException;
 import com.cletogadelha.service.GameService;
 
@@ -38,19 +39,29 @@ public class GameController<T> extends CRUDController<Game> {
 	}
 	
 	@RequestMapping(value="{game_id}/player/{playerId}/move", method=RequestMethod.POST)
-	public ResponseEntity<Game> makeAMove(@PathVariable("game_id") Integer gameId, 
+	public ResponseEntity<MoveResponse> makeAMove(@PathVariable("game_id") Integer gameId, 
 			@PathVariable("playerId") Integer playerId, @RequestBody @Valid Move move) throws BattleshipException {
 		return ResponseEntity.ok(((GameService) getService()).makeAMove(gameId, playerId, move));
 	}
 	
-	@RequestMapping(value="{game_id}/coinFlip", method=RequestMethod.POST)
-	public ResponseEntity<Game> coinFlip(@PathVariable("game_id") Integer gameId) throws BattleshipException {
-		return ResponseEntity.ok(((GameService) getService()).coinFlip(gameId));
+	@RequestMapping(value="{game_id}/flipCoin", method=RequestMethod.POST)
+	public ResponseEntity<Game> flipCoin(@PathVariable("game_id") Integer gameId) throws BattleshipException {
+		return ResponseEntity.ok(((GameService) getService()).flipCoin(gameId));
 	}
 	
 	@RequestMapping(value="{game_id}/status", method=RequestMethod.GET)
 	public ResponseEntity<Game> gameStatus(@PathVariable("game_id") Integer gameId) throws BattleshipException {
 		return ResponseEntity.ok(((GameService) getService()).gameStatus(gameId));
+	}
+	
+	@RequestMapping(value="{game_id}/pause", method=RequestMethod.POST)
+	public ResponseEntity<Game> pauseGame(@PathVariable("game_id") Integer gameId) throws BattleshipException {
+		return ResponseEntity.ok(((GameService) getService()).pauseGame(gameId));
+	}
+	
+	@RequestMapping(value="{game_id}/resume", method=RequestMethod.POST)
+	public ResponseEntity<Game> resumeGame(@PathVariable("game_id") Integer gameId) throws BattleshipException {
+		return ResponseEntity.ok(((GameService) getService()).resumeGame(gameId));
 	}
 	
 	@Override

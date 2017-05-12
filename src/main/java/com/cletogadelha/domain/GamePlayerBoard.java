@@ -56,5 +56,30 @@ public class GamePlayerBoard extends AbstractBaseEntity {
 	public void setPk(GamePlayerBoardId pk) {
 		this.pk = pk;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GamePlayerBoard other = (GamePlayerBoard) obj;
+		if (pk == null) {
+			if (other.pk != null)
+				return false;
+		} else if (!pk.equals(other.pk))
+			return false;
+		return true;
+	}
 	
 }

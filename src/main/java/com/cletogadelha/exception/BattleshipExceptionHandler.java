@@ -10,8 +10,10 @@ public class BattleshipExceptionHandler {
 	
 	@ExceptionHandler(BattleshipException.class)
 	public ResponseEntity<BattleshipErrorResponse> battleshipExceptionHandler(Exception ex) {
-		HttpStatus status = ((BattleshipException)ex).getStatus();	
-		Integer responseCode = status == null ? HttpStatus.BAD_REQUEST.value() : status.value();
+		HttpStatus status = ((BattleshipException)ex).getStatus() == null 
+				? HttpStatus.BAD_REQUEST : ((BattleshipException)ex).getStatus();	
+		Integer responseCode = status == null 
+				? HttpStatus.BAD_REQUEST.value() : status.value();
 		
 		BattleshipErrorResponse error = new BattleshipErrorResponse();
 		error.setErrorCode(responseCode);
@@ -26,6 +28,7 @@ public class BattleshipExceptionHandler {
 		
 		error.setErrorCode(HttpStatus.BAD_REQUEST.value());
 		error.setMessage("Please contact our support team.");
+//		error.setMessage(ex.getMessage());
 		
 		return new ResponseEntity<BattleshipErrorResponse>(error, HttpStatus.BAD_REQUEST);
 	}	

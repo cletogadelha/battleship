@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cletogadelha.domain.Player;
@@ -12,9 +13,10 @@ import com.cletogadelha.domain.Player;
 @Service
 public class PlayerService extends BaseService<Player> {
 	
-	public Page<Player> getLeaderBoard(){
+	public ResponseEntity<Page<Player>> getLeaderBoard(){
+		//Page having the first 10 scores in DESC order
 		PageRequest top10 = new PageRequest(0, 10, new Sort(new Order(Direction.DESC, "score")));
-		return getRepository().findAll(top10);
+		return ResponseEntity.ok(getRepository().findAll(top10));
 	}
 	
 }

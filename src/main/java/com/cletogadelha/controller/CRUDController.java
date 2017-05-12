@@ -42,8 +42,8 @@ public abstract class CRUDController<T> {
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	public T update(@PathVariable("id") Integer id, @RequestBody @Valid T type) {
-		return service.update(type);
+	public ResponseEntity<T> update(@PathVariable("id") Integer id, @RequestBody @Valid T type) {
+		return new ResponseEntity<T>(service.update(type), HttpStatus.OK);
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)

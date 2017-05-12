@@ -14,7 +14,7 @@ public class PlayerController extends CRUDController<Player>{
 	
 	@RequestMapping(value="/leaderboard", method=RequestMethod.GET)
 	public ResponseEntity<?> getLeaderBoard() {
-		return ResponseEntity.ok(((PlayerService) getService()).getLeaderBoard().getContent()); 
+		return ResponseEntity.ok(((PlayerService) getService()).getLeaderBoard().getBody().getContent()); 
 	}
 
 }

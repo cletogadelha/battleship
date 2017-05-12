@@ -17,6 +17,11 @@ public class BoardService extends BaseService<Board> {
 	@Autowired
 	private CoordinateService coordinateService;
 	
+	/**
+	 * Return all the coordinates that the ship will occupy starting from the initial coordinate
+	 * @param placement
+	 * @return
+	 */
 	public List<Coordinate> getAllCoordinatesFromInitialCoordinate(BoardPlacement placement) {
 		
 		List<Coordinate> coordinates = new ArrayList<>();
